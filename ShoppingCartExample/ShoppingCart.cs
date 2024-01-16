@@ -66,24 +66,79 @@ public sealed class ShoppingCart : Grain, IShoppingCart
     {
         if (!_state.State.Any())
         {
-           return Result<string>.Failure("Nothing in cart.");
+            return Result<string>.Failure("Nothing in cart.");
         }
 
+        var paymentResult = await ProcessPayment();
+
+        if (!paymentResult.IsSuccess)
+        {
+            // Payment failed, no need to proceed further
+
+            return Result<string>.Failure("Payment processing failed.");
+        }
+
+        var shippingResult = await ProcessShipping();
+
+        if (!shippingResult.IsSuccess)
+        {
+            // Shipping failed, initiate compensating transaction for payment
+
+            await ReversePayment();
+            return Result<string>.Failure("Shipping processing failed.");
+        }
+
+        return Result<string>.Success("Checkout processing success");
+    }
+
+    private async Task<Result<string>> ProcessShipping()
+    {
+        var client = _httpClientFactory.CreateClient("ShippingClient");
+        var response = await client.PostAsync("/shipping/process", null);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogWarning("Shipping processing failed.");
+
+            return Result<string>.Failure("Shipping processing failed.");
+        }
+
+        _logger.LogInformation("Shipping processed successfully.");
+
+        _state.State.Clear();
+        await _state.WriteStateAsync();
+
+        return Result<string>.Success("Shipping processed successfully.");
+    }
+
+    private async Task<Result<string>> ProcessPayment()
+    {
         var client = _httpClientFactory.CreateClient("PaymentClient");
         var response = await client.PostAsync("/payment/process", null);
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogWarning("Payment processing failed. Checkout aborted.");
+            _logger.LogWarning("Payment processing failed.");
 
             return Result<string>.Failure("Payment processing failed.");
         }
 
-        _logger.LogInformation("Payment processed successfully. Clearing cart.");
+        _logger.LogInformation("Payment processed successfully.");
+
         _state.State.Clear();
         await _state.WriteStateAsync();
 
-        return Result<string>.Success("Payment processed successfully. Clearing cart.");
+        return Result<string>.Success("Payment processed successfully.");
+    }
+
+    private async Task<Result<string>> ReversePayment()
+    {
+        // Implement the logic to reverse the payment here
+        // This is typically an API call to your payment service
+
+        _logger.LogInformation("Payment reversed due to shipping failure.");
+
+        return Result<string>.Success("Payment reversed successfully.");
     }
 }
 
