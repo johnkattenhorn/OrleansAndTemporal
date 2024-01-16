@@ -2,8 +2,18 @@ using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Orleans.Runtime;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug() // Set the minimum log level
+    .WriteTo.Console(
+        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}",
+        theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Literate) // Use color theme
+    .CreateLogger();
+
+builder.Host.UseSerilog(); // Use Serilog for logging
 
 builder.Host.UseOrleans(static siloBuilder =>
 {
