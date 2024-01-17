@@ -1,16 +1,15 @@
 using System.Net;
-using System.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
-using Orleans.Runtime;
 using Serilog;
+using ShoppingCartExample;
 
 var builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug() // Set the minimum log level
+    .MinimumLevel.Information() // Set the minimum log level
     .WriteTo.Console(
         outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}",
-        theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Literate) // Use color theme
+        theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code) // Use color theme
     .CreateLogger();
 
 builder.Host.UseSerilog(); // Use Serilog for logging
@@ -79,28 +78,28 @@ app.MapPost("/shipping/process", async () =>
 
 app.MapPost("/cart/add", async (int cartId, Product product, IClusterClient client) =>
 {
-    var cartGrain = client.GetGrain<IShoppingCart>(cartId);
+    var cartGrain = client.GetGrain<IShoppingCartGrain>(cartId);
     await cartGrain.AddItem(product);
     return Results.Ok("Item added to cart");
 });
 
 app.MapPost("/cart/remove", async (int cartId, Product product, IClusterClient client) =>
 {
-    var cartGrain = client.GetGrain<IShoppingCart>(cartId);
+    var cartGrain = client.GetGrain<IShoppingCartGrain>(cartId);
     await cartGrain.RemoveItem(product);
     return Results.Ok("Item removed from cart");
 });
 
 app.MapGet("/cart/view", async (int cartId, IClusterClient client) =>
 {
-    var cartGrain = client.GetGrain<IShoppingCart>(cartId);
+    var cartGrain = client.GetGrain<IShoppingCartGrain>(cartId);
     var items = await cartGrain.ViewCart();
     return Results.Ok(items);
 });
 
 app.MapPost("/cart/checkout", async (int cartId, IClusterClient client) =>
 {
-    var cartGrain = client.GetGrain<IShoppingCart>(cartId);
+    var cartGrain = client.GetGrain<IShoppingCartGrain>(cartId);
     var result = await cartGrain.Checkout();
 
     return !result.IsSuccess ? 
