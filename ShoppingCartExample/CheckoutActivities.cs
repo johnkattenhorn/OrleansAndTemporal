@@ -66,4 +66,16 @@ public class CheckoutActivities
 
         return Result<string>.Success("Payment reversed successfully.");
     }
+
+    [Activity]
+    public async Task<Result<string>> ClearCart(long cartId)
+    {
+        var cartGrain = _orleansClient.GetGrain<IShoppingCartGrain>(cartId);
+
+        await cartGrain.ClearCart();
+    
+        ActivityExecutionContext.Current.Logger.LogInformation("[ShoppingCartExample] Cleared Cart Successfully.");
+
+        return Result<string>.Success("Cleared Cart Successfully.");
+    }
 }

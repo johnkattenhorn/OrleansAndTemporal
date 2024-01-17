@@ -80,6 +80,11 @@ public sealed class ShoppingCartGrain : Grain, IShoppingCartGrain
 
         var result = await handle.GetResultAsync();
 
+        if (result.IsSuccess)
+        {
+            await ClearCart();
+        }
+
         return result;
     }
 }

@@ -50,11 +50,12 @@ public class CheckoutWorkflow
                     StartToCloseTimeout = TimeSpan.FromMinutes(5)
                 });
 
-        var shoppingCart = _orleansClient.GetGrain<IShoppingCartGrain>(cartId);
-
-        Workflow.Logger.LogInformation("[ShoppingCartExample] Checkout was successful. Clearing Cart.");
-        await shoppingCart.ClearCart();
-
+        //var clearCart = await Workflow.ExecuteActivityAsync(
+        //    (CheckoutActivities act) => act.ClearCart(cartId), new ActivityOptions
+        //    {
+        //        StartToCloseTimeout = TimeSpan.FromMinutes(5)
+        //    });
+        
         return Result<string>.Success("Checkout was successful.");
     }
 }
