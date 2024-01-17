@@ -1,25 +1,16 @@
-using Microsoft.Extensions.Logging;
 using Orleans.Runtime;
-using System.Net.Http;
-using ShoppingCartExample;
 
-public interface IShoppingCart : IGrainWithIntegerKey
-{
-    Task AddItem(Product productToAdd);
-    Task RemoveItem(Product productToRemove);
-    Task<Result<string>> Checkout();
-    Task<List<Product>> ViewCart();
-}
+namespace ShoppingCartExample;
 
-public sealed class ShoppingCart : Grain, IShoppingCart
+public sealed class ShoppingCartGrain : Grain, IShoppingCartGrain
 {
     private readonly IPersistentState<List<Product>> _state;
-    private readonly ILogger<ShoppingCart> _logger;
+    private readonly ILogger<ShoppingCartGrain> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public ShoppingCart(
+    public ShoppingCartGrain(
         [PersistentState("cart", "carts")] IPersistentState<List<Product>> state,
-        ILogger<ShoppingCart> logger,
+        ILogger<ShoppingCartGrain> logger,
         IHttpClientFactory httpClientFactory)
         : base()
     {
@@ -35,7 +26,8 @@ public sealed class ShoppingCart : Grain, IShoppingCart
             throw new ArgumentNullException(nameof(productToAdd));
         }
 
-        _logger.LogInformation($"Adding product {productToAdd.Name} to cart.");
+        _logger.LogInformation($"[ShoppingCartExample] Adding product {productToAdd.Name} to cart.");
+
         _state.State.Add(productToAdd);
         await _state.WriteStateAsync();
     }
@@ -48,11 +40,11 @@ public sealed class ShoppingCart : Grain, IShoppingCart
         {
             _state.State.Remove(product);
             await _state.WriteStateAsync();
-            _logger.LogInformation($"Removed product {productToRemove.Name} from cart.");
+            _logger.LogInformation($"[ShoppingCartExample] Removed product {productToRemove.Name} from cart.");
         }
         else
         {
-            _logger.LogWarning($"Attempted to remove non-existing product {productToRemove.Name} from cart.");
+            _logger.LogWarning($"[ShoppingCartExample] Attempted to remove non-existing product {productToRemove.Name} from cart.");
         }
     }
 
@@ -98,12 +90,12 @@ public sealed class ShoppingCart : Grain, IShoppingCart
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogWarning("Shipping processing failed.");
+            _logger.LogWarning("[ShoppingCartExample] Shipping processing failed.");
 
             return Result<string>.Failure("Shipping processing failed.");
         }
 
-        _logger.LogInformation("Shipping processed successfully.");
+        _logger.LogInformation("[ShoppingCartExample] Shipping processed successfully.");
 
         _state.State.Clear();
         await _state.WriteStateAsync();
@@ -118,12 +110,12 @@ public sealed class ShoppingCart : Grain, IShoppingCart
 
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogWarning("Payment processing failed.");
+            _logger.LogWarning("[ShoppingCartExample] Payment processing failed.");
 
             return Result<string>.Failure("Payment processing failed.");
         }
 
-        _logger.LogInformation("Payment processed successfully.");
+        _logger.LogInformation("[ShoppingCartExample] Payment processed successfully.");
 
         _state.State.Clear();
         await _state.WriteStateAsync();
@@ -136,15 +128,8 @@ public sealed class ShoppingCart : Grain, IShoppingCart
         // Implement the logic to reverse the payment here
         // This is typically an API call to your payment service
 
-        _logger.LogInformation("Payment reversed due to shipping failure.");
+        _logger.LogInformation("[ShoppingCartExample] Payment reversed due to shipping failure.");
 
         return Result<string>.Success("Payment reversed successfully.");
     }
 }
-
-
-[GenerateSerializer]
-public record Product
-{
-    [Id(0)] public string Name { get; set; } = "";
-};
