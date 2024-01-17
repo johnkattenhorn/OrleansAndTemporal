@@ -6,4 +6,5 @@ public interface IShoppingCartGrain : IGrainWithIntegerKey
     Task RemoveItem(Product productToRemove);
     Task<Result<string>> Checkout();
     Task<List<Product>> ViewCart();
+    Task ClearCart();
 }

@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using ShoppingCartExample;
+using Temporalio.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,17 @@ builder.Host.UseOrleans(static siloBuilder =>
     siloBuilder.UseLocalhostClustering();
     siloBuilder.AddMemoryGrainStorage("carts");
 });
+
+builder.Services.AddHostedTemporalWorker(
+        "localhost:7233",
+        "default",
+        CheckoutWorkflow.TaskQueue)
+    .AddScopedActivities<CheckoutWorkflow>()
+    .AddWorkflow<CheckoutWorkflow>();
+
+builder.Services.AddTemporalClient(
+    "localhost:7233",
+    "default");
 
 builder.Services.AddEndpointsApiExplorer(); // Required for Swagger
 builder.Services.AddSwaggerGen(c =>

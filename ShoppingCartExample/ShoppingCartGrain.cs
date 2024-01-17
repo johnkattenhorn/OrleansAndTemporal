@@ -1,4 +1,6 @@
 using Orleans.Runtime;
+using Temporalio.Client;
+using Temporalio.Workflows;
 
 namespace ShoppingCartExample;
 
@@ -7,16 +9,19 @@ public sealed class ShoppingCartGrain : Grain, IShoppingCartGrain
     private readonly IPersistentState<List<Product>> _state;
     private readonly ILogger<ShoppingCartGrain> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ITemporalClient _temporalClient;
 
     public ShoppingCartGrain(
         [PersistentState("cart", "carts")] IPersistentState<List<Product>> state,
         ILogger<ShoppingCartGrain> logger,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        ITemporalClient temporalClient)
         : base()
     {
-        this._state = state;
-        this._logger = logger;
+        _state = state;
+        _logger = logger;
         _httpClientFactory = httpClientFactory;
+        _temporalClient = temporalClient;
     }
 
     public async Task AddItem(Product productToAdd)
@@ -54,6 +59,10 @@ public sealed class ShoppingCartGrain : Grain, IShoppingCartGrain
         return new List<Product>(_state.State);
     }
 
+    public async Task ClearCart()
+    {
+        await _state.ClearStateAsync();
+    }
     public async Task<Result<string>> Checkout()
     {
         if (!_state.State.Any())
@@ -61,75 +70,16 @@ public sealed class ShoppingCartGrain : Grain, IShoppingCartGrain
             return Result<string>.Failure("Nothing in cart.");
         }
 
-        var paymentResult = await ProcessPayment();
+        // Start a workflow
 
-        if (!paymentResult.IsSuccess)
-        {
-            // Payment failed, no need to proceed further
+        var handle = await _temporalClient.StartWorkflowAsync(
+            (CheckoutWorkflow wf) => wf.RunAsync(this.GetPrimaryKeyLong()),
+            new() { Id = nameof(CheckoutWorkflow), TaskQueue = CheckoutWorkflow.TaskQueue });
 
-            return Result<string>.Failure("Payment processing failed.");
-        }
+        // Wait for a result
 
-        var shippingResult = await ProcessShipping();
+        var result = await handle.GetResultAsync();
 
-        if (!shippingResult.IsSuccess)
-        {
-            // Shipping failed, initiate compensating transaction for payment
-
-            await ReversePayment();
-            return Result<string>.Failure("Shipping processing failed.");
-        }
-
-        return Result<string>.Success("Checkout processing success");
-    }
-
-    private async Task<Result<string>> ProcessShipping()
-    {
-        var client = _httpClientFactory.CreateClient("ShippingClient");
-        var response = await client.PostAsync("/shipping/process", null);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogWarning("[ShoppingCartExample] Shipping processing failed.");
-
-            return Result<string>.Failure("Shipping processing failed.");
-        }
-
-        _logger.LogInformation("[ShoppingCartExample] Shipping processed successfully.");
-
-        _state.State.Clear();
-        await _state.WriteStateAsync();
-
-        return Result<string>.Success("Shipping processed successfully.");
-    }
-
-    private async Task<Result<string>> ProcessPayment()
-    {
-        var client = _httpClientFactory.CreateClient("PaymentClient");
-        var response = await client.PostAsync("/payment/process", null);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogWarning("[ShoppingCartExample] Payment processing failed.");
-
-            return Result<string>.Failure("Payment processing failed.");
-        }
-
-        _logger.LogInformation("[ShoppingCartExample] Payment processed successfully.");
-
-        _state.State.Clear();
-        await _state.WriteStateAsync();
-
-        return Result<string>.Success("Payment processed successfully.");
-    }
-
-    private async Task<Result<string>> ReversePayment()
-    {
-        // Implement the logic to reverse the payment here
-        // This is typically an API call to your payment service
-
-        _logger.LogInformation("[ShoppingCartExample] Payment reversed due to shipping failure.");
-
-        return Result<string>.Success("Payment reversed successfully.");
+        return result;
     }
 }
