@@ -13,7 +13,7 @@ public class CheckoutWorkflow
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IClusterClient _orleansClient;
 
-    public CheckoutWorkflow(){}
+    public CheckoutWorkflow() { }
 
     public CheckoutWorkflow(
         ILogger<ShoppingCartGrain> logger,
@@ -40,13 +40,13 @@ public class CheckoutWorkflow
 
 
             var payment = await Workflow.ExecuteActivityAsync(
-                () => ProcessPayment(cartId),new ActivityOptions
+                (CheckoutWorkflow wf) => wf.ProcessPayment(cartId),new ActivityOptions
                 {
                     StartToCloseTimeout = TimeSpan.FromMinutes(5)
                 });
 
             var shipping = await Workflow.ExecuteActivityAsync(
-                () => ProcessShipping(cartId), new ActivityOptions
+                (CheckoutWorkflow wf) => wf.ProcessShipping(cartId), new ActivityOptions
                 {
                     StartToCloseTimeout = TimeSpan.FromMinutes(5)
                 });
@@ -61,7 +61,8 @@ public class CheckoutWorkflow
                 return Result<string>.Success("Checkout was successful. Clearing Cart.");
             }
 
-            return Result<string>.Failure("Checkout failed.");
+            Workflow.Logger.LogError("[ShoppingCartExample] Checkout failed.");
+        return Result<string>.Failure("Checkout failed.");
     }
 
     [Activity]
@@ -74,12 +75,12 @@ public class CheckoutWorkflow
 
         if (!response.IsSuccessStatusCode)
         {
-            Workflow.Logger.LogWarning("[ShoppingCartExample] Shipping processing failed.");
+            _logger.LogWarning("[ShoppingCartExample] Shipping processing failed.");
 
             return Result<string>.Failure("Shipping processing failed.");
         }
 
-        Workflow.Logger.LogInformation("[ShoppingCartExample] Shipping processed successfully.");
+        _logger.LogInformation("[ShoppingCartExample] Shipping processed successfully.");
       
         return Result<string>.Success("Shipping processed successfully.");
     }
@@ -94,12 +95,12 @@ public class CheckoutWorkflow
 
         if (!response.IsSuccessStatusCode)
         {
-            Workflow.Logger.LogWarning("[ShoppingCartExample] Payment processing failed.");
+            _logger.LogWarning("[ShoppingCartExample] Payment processing failed.");
 
             return Result<string>.Failure("Payment processing failed.");
         }
 
-        Workflow.Logger.LogInformation("[ShoppingCartExample] Payment processed successfully.");
+        _logger.LogInformation("[ShoppingCartExample] Payment processed successfully.");
 
         return Result<string>.Success("Payment processed successfully.");
     }
@@ -109,7 +110,7 @@ public class CheckoutWorkflow
         // Implement the logic to reverse the payment here
         // This is typically an API call to your payment service
 
-        Workflow.Logger.LogInformation("[ShoppingCartExample] Payment reversed due to shipping failure.");
+        _logger.LogInformation("[ShoppingCartExample] Payment reversed due to shipping failure.");
 
         return Result<string>.Success("Payment reversed successfully.");
     }

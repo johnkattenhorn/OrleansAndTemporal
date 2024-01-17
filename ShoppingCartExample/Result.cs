@@ -3,6 +3,9 @@ namespace ShoppingCartExample;
 [GenerateSerializer]
 public class Result<T>
 {
+
+    public Result() { }
+
     [Id(0)]
     public bool IsSuccess { get; }
 
