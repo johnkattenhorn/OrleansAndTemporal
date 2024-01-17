@@ -25,7 +25,7 @@ builder.Services.AddHostedTemporalWorker(
         "localhost:7233",
         "default",
         CheckoutWorkflow.TaskQueue)
-    .AddScopedActivities<CheckoutWorkflow>()
+    .AddScopedActivities<CheckoutActivities>()
     .AddWorkflow<CheckoutWorkflow>();
 
 builder.Services.AddTemporalClient(
