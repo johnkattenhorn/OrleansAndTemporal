@@ -12,8 +12,6 @@ public class CheckoutWorkflow
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IClusterClient _orleansClient;
 
-    private readonly CheckoutActivities _checkoutActivities;
-
     public CheckoutWorkflow()
     {
     }
@@ -39,28 +37,18 @@ public class CheckoutWorkflow
 
         // If both are successful then:
         // Update Cart (via orleans grain clear cart method)
-
+        
         var payment = await Workflow.ExecuteActivityAsync(
-            (CheckoutActivities act) => act.ProcessPayment(cartId), new ActivityOptions
-            {
-                StartToCloseTimeout = TimeSpan.FromMinutes(5)
-            });
-
-        if (!payment.IsSuccess)
-        {
-            return Result<string>.Failure("Checkout failed.");
-        }
-
+                (CheckoutActivities act) => act.ProcessPayment(cartId), new ActivityOptions
+                {
+                    StartToCloseTimeout = TimeSpan.FromMinutes(5)
+                });
+        
         var shipping = await Workflow.ExecuteActivityAsync(
                 (CheckoutActivities act) => act.ProcessShipping(cartId), new ActivityOptions
                 {
                     StartToCloseTimeout = TimeSpan.FromMinutes(5)
                 });
-
-        if (!shipping.IsSuccess)
-        {
-            return Result<string>.Failure("Checkout failed.");
-        }
 
         var shoppingCart = _orleansClient.GetGrain<IShoppingCartGrain>(cartId);
 
