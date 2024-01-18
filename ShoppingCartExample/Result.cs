@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace ShoppingCartExample;
 
 [GenerateSerializer]
@@ -7,13 +9,13 @@ public class Result<T>
     public Result() { }
 
     [Id(0)]
-    public bool IsSuccess { get; set; }
+    public bool IsSuccess { get; init; }
 
-    [Id(1)] 
-    public T Data { get; set; }
+    [Id(1)]
+    public T Data { get; init; }
 
-    [Id(2)] 
-    public string Error { get; set; }
+    [Id(2)]
+    public string Error { get; init; }
 
     protected Result(T data, bool isSuccess, string error)
     {
