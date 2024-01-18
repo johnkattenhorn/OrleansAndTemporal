@@ -7,13 +7,13 @@ public class Result<T>
     public Result() { }
 
     [Id(0)]
-    public bool IsSuccess { get; }
+    public bool IsSuccess { get; set; }
 
     [Id(1)] 
-    public T Data { get; }
+    public T Data { get; set; }
 
     [Id(2)] 
-    public string Error { get; }
+    public string Error { get; set; }
 
     protected Result(T data, bool isSuccess, string error)
     {
