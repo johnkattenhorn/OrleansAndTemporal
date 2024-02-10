@@ -1,131 +1,71 @@
-# Temporal Workflow Demo
+# ShoppingCartExamples Solution
 
-This project demonstrates a Temporal workflow for a shopping cart application. It illustrates how Temporal can be used to orchestrate complex workflows in a distributed system.
+Welcome to the ShoppingCartExamples solution, a simple example demonstrating various implementations of a simple shopping cart using Orleans in .NET. 
+
+This solution was created to support the Temporal Talk in London ***Scaling Workflow Systems with Temporal, .NET, and Orleans: An Integrated Approach*** and includes three distinct variants. 
+
+Each variant showcases different approaches to managing workflows, error handling, and resilience within a .NET application.
+
+## Variants Overview
+
+- **PureCSharp ShoppingCart Example**: Implements a basic shopping cart using standard C# and .NET features, focusing on simplicity and clarity.
+- **Polly ShoppingCart Example**: Utilizes the Polly library to apply advanced resilience patterns like retries, circuit breakers, and timeout policies.
+- **Temporal ShoppingCart Example**: Leverages Temporal.io's capabilities for orchestrating workflows, providing fault tolerance and seamless retries.
 
 ## Prerequisites
 
-- Docker and Docker Compose
 - .NET SDK
-- Visual Studio
+- Visual Studio or another compatible IDE
+- Docker and Docker Compose (for the Temporal Workflow Demo)
 
-## Setting Up the Temporal Server
+## Getting Started
 
-To run the Temporal server locally, you can use Docker Compose. (There are other ways to run the development environment locally)
+To begin, ensure you have cloned the repository and have the necessary prerequisites installed on your machine. 
 
-1. **Clone the Temporal Docker Compose repository**:
+1. **Open the Solution**:
+    - Open Visual Studio.
+    - Navigate to `File` > `Open` > `Project/Solution`.
+    - Locate and select the `ShoppingCartExamples.sln` file.
 
-    ```bash
-    git clone https://github.com/temporalio/docker-compose.git
-    cd docker-compose
-    ```
+2. **Restore Dependencies**:
+    - Right-click on the solution in Solution Explorer.
+    - Select "Restore NuGet Packages".
 
-2. **Start the Temporal server**:
+## Running the Variants
 
-    ```bash
-    docker-compose up
-    ```
+To run a specific variant, set it as the startup project:
 
-   This command starts the Temporal server and its dependencies (such as Cassandra or MySQL, depending on the configuration).
+1. **Temporal Workflow Demo**:
+    - Navigate to the `ShoppingCartExample.Temporal` project.
+    - Right-click and choose 'Set as Startup Project'.
+    - Follow the project-specific README for running the Temporal server.
 
-3. Creating an Alias for Temporal CLI in PowerShell
+2. **PureCSharp ShoppingCart Example**:
+    - Navigate to the `ShoppingCartExample.PureCSharp` project.
+    - Right-click and choose 'Set as Startup Project'.
+    - Start the application.
 
-To simplify the usage of the Temporal CLI within the Docker container, you can create an alias in PowerShell. This alias allows you to run Temporal CLI commands without typing the full Docker command each time.
+3. **Polly ShoppingCart Example**:
+    - Navigate to the `ShoppingCartExample.Polly` project.
+    - Right-click and choose 'Set as Startup Project'.
+    - Start the application.
 
-1. **Open PowerShell**:
+## Variant-Specific Instructions
 
-    Start PowerShell on your machine.
+Each variant has its own set of instructions and prerequisites:
 
-2. **Define the Alias**:
+- [Temporal Workflow Demo README](/ShoppingCartExample.Temporal/README.md)
+- [PureCSharp ShoppingCart Example README](/ShoppingCartExample.PureCSharp/README.md)
+- [Polly ShoppingCart Example README](/ShoppingCartExample.Polly/README.md)
 
-    Run the following command in PowerShell to create an alias named `TemporalCli`:
-
-    ```powershell
-    function TemporalCli { docker exec -it temporal-admin-tools temporal $args }
-    Set-Alias -Name tctl -Value TemporalCli
-    ```
-
-    This command creates a function `TemporalCli` that runs Temporal CLI commands inside the Docker container (`temporal-admin-tools`). The `Set-Alias` command then creates an alias `tctl` that points to this function.
-
-3. **Using the Alias**:
-
-    Now, you can use the `tctl` alias in PowerShell to run Temporal CLI commands. For example:
-
-    ```powershell
-    tctl namespace list
-    ```
-
-    This command will list all Temporal namespaces using the Temporal CLI within the Docker container.
-
-4. **Making the Alias Persistent** (Optional):
-
-    If you want this alias to be available in all future PowerShell sessions:
-
-    - Open your PowerShell profile script:
-
-      ```powershell
-      notepad $PROFILE
-      ```
-
-    - Add the function and alias commands to this script:
-
-      ```powershell
-      function TemporalCli { docker exec -it temporal-admin-tools temporal $args }
-      Set-Alias -Name tctl -Value TemporalCli
-      ```
-
-    - Save the file and restart PowerShell.
-
-## Getting the Demo Code
-
-1. **Clone the repository**:
-
-    Open a command prompt and run:
-
-    ```bash
-    git clone https://github.com/johnkattenhorn/OrleansAndTemporal/tree/temporal
-    cd [Your Repository Folder]
-    ```
-
-2. **Open the Solution in Visual Studio**:
-
-    Start Visual Studio and open the solution file (`ShoppingCartExample.sln`) located in the cloned repository.
-
-3. **Restore NuGet Packages**:
-
-    Right-click on the solution in Visual Studio and select "Restore NuGet Packages" to ensure all dependencies are downloaded.
-
-4. **Build the Solution**:
-
-    Build the solution by pressing `Ctrl + Shift + B` or by selecting "Build Solution" from the "Build" menu.
-
-## Running the Demo
-
-1. **Start the Application**:
-
-    Run the application by pressing `F5` or by selecting "Start Debugging" from the "Debug" menu.
-
-2. **Add some products and checkout using Swagger**:
-
-    Once the application is running, you can trigger workflows through the Swagger UI.
-
-    The swagger UI can be accessed at `https://localhost:59855/swagger/index.html`
-
-## Viewing Workflow History in Temporal Web UI
-
-The Temporal Web UI provides a visual interface to view workflow histories, see running workflows, and query workflow data.
-
-1. **Access the Temporal Web UI**:
-
-    The Temporal Web UI can be accessed at `http://localhost:8088`.
-
-2. **Navigate to the Dashboard**:
-
-    In the Temporal Web UI, you can navigate to the dashboard to view a list of namespaces and workflows.
-
-3. **View Workflow Details**:
-
-    Click on a specific workflow to view its details, history, and events. This is useful for debugging and understanding the behavior of your workflows.
+Please refer to these README files for detailed instructions on running and interacting with each variant.
 
 ## Conclusion
 
-This README provides basic instructions to get started with the Temporal workflow demo. For more detailed information about Temporal and its capabilities, visit the [Temporal Documentation](https://docs.temporal.io/docs), to Temporal DotNet specific documentation, visit the SDK [Temporal DotNet SDK](https://github.com/temporalio/sdk-dotnet)
+The ShoppingCartExamples solution is designed to provide a hands-on look at different architectural approaches in .NET applications. Whether you're interested in workflow orchestration, fundamental C# implementations, or resilience patterns, this solution offers very basic insight.
+
+## Further Enhancement
+
+A more realistic scale implementation of the Temporal example including:
+
+**Non-Blocking execution of the workflow** - typically this would return to the user to config acceptance of the order and the workflow activities would then drive interaction with the user as the workflow progressed.
