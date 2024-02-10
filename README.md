@@ -31,6 +31,50 @@ To begin, ensure you have cloned the repository and have the necessary prerequis
     - Right-click on the solution in Solution Explorer.
     - Select "Restore NuGet Packages".
 
+# Testing the ShoppingCart Example
+
+Follow these steps to test the ShoppingCart Example using the Swagger UI. Ensure you use the same `cartId` for all the API actions during the test.
+
+## Step 1: Add Products to Cart
+
+Use the `/cart/add` endpoint to add products to your shopping cart.
+
+- **Endpoint**: `POST /cart/add`
+- **Query Parameter**: `cartId` (Choose any integer, e.g., 1)
+- **Request Body**: Provide product details. You can use the default payload if you wish.
+  
+  Example payload:
+  ```json
+  {
+    "name": "Example Product"
+  }
+  ```
+
+## Step 2: View Cart Contents
+
+After adding products, check the contents of your cart using the `/cart/view` endpoint.
+
+- **Endpoint**: `GET /cart/view`
+- **Query Parameter**: `cartId` (Use the same `cartId` as in Step 1)
+
+This step verifies that the products have been successfully added to the cart.
+
+## Step 3: Checkout
+
+Finally, trigger the checkout workflow using the `/cart/checkout` endpoint.
+
+- **Endpoint**: `POST /cart/checkout`
+- **Query Parameter**: `cartId` (Use the same `cartId` as in previous steps)
+
+This action will process the items in your cart and perform the checkout workflow.
+
+## Accessing Swagger UI
+
+To access the Swagger UI and perform these actions:
+
+- Navigate to `https://localhost:59855/swagger/index.html` in your browser.
+- Use the Swagger UI to interact with the above endpoints.
+
 ## Running the Variants
 
 To run a specific variant, set it as the startup project:

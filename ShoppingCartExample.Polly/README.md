@@ -22,10 +22,6 @@ This is the Polly-enhanced variant of the ShoppingCart Example within a single s
 
     Start the application by pressing `F5` or by selecting "Start Debugging" from the "Debug" menu.
 
-## Interacting with the Application
-
-Interact with the Polly ShoppingCart application through swagger. The swagger UI can be accessed at `https://localhost:59855/swagger/index.html`
-
 ## Conclusion
 
 The Polly variant provides insight into advanced resilience patterns and their implementation in .NET applications. It's a practical example for developers looking to enhance their applications' fault tolerance.

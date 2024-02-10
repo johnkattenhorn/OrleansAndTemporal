@@ -21,10 +21,6 @@ This is the Pure C# variant of the ShoppingCart Example within a single solution
 
     Start the application by pressing `F5` or by selecting "Start Debugging" from the "Debug" menu.
 
-## Interacting with the Application
-
-Interact with the PureCSharp ShoppingCart application through swagger. The swagger UI can be accessed at `https://localhost:59855/swagger/index.html`
-
 ## Conclusion
 
 This variant of the ShoppingCart Example is a starting point for understanding basic .NET application structure and flow control.

@@ -75,41 +75,6 @@ To simplify the usage of the Temporal CLI within the Docker container, you can c
 
     - Save the file and restart PowerShell.
 
-## Getting the Demo Code
-
-1. **Clone the repository**:
-
-    Open a command prompt and run:
-
-    ```bash
-    git clone https://github.com/johnkattenhorn/OrleansAndTemporal/tree/temporal
-    cd [Your Repository Folder]
-    ```
-
-2. **Open the Solution in Visual Studio**:
-
-    Start Visual Studio and open the solution file (`ShoppingCartExample.sln`) located in the cloned repository.
-
-3. **Restore NuGet Packages**:
-
-    Right-click on the solution in Visual Studio and select "Restore NuGet Packages" to ensure all dependencies are downloaded.
-
-4. **Build the Solution**:
-
-    Build the solution by pressing `Ctrl + Shift + B` or by selecting "Build Solution" from the "Build" menu.
-
-## Running the Demo
-
-1. **Start the Application**:
-
-    Run the application by pressing `F5` or by selecting "Start Debugging" from the "Debug" menu.
-
-2. **Add some products and checkout using Swagger**:
-
-    Once the application is running, you can trigger workflows through the Swagger UI.
-
-    The swagger UI can be accessed at `https://localhost:59855/swagger/index.html`
-
 ## Viewing Workflow History in Temporal Web UI
 
 The Temporal Web UI provides a visual interface to view workflow histories, see running workflows, and query workflow data.
