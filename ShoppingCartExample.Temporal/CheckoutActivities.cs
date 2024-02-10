@@ -1,12 +1,12 @@
 using Temporalio.Activities;
 
-namespace ShoppingCartExample;
+namespace ShoppingCartExample.Temporal;
 
 public class CheckoutActivities
 {
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IClusterClient _orleansClient;
-    
+
     public CheckoutActivities(
         IHttpClientFactory httpClientFactory,
         IClusterClient orleansClient)
@@ -32,7 +32,7 @@ public class CheckoutActivities
         }
 
         ActivityExecutionContext.Current.Logger.LogInformation("[ShoppingCartExample] Shipping processed successfully.");
-      
+
         return Result<string>.Success("Shipping processed successfully.");
     }
 
@@ -73,7 +73,7 @@ public class CheckoutActivities
         var cartGrain = _orleansClient.GetGrain<IShoppingCartGrain>(cartId);
 
         await cartGrain.ClearCart();
-    
+
         ActivityExecutionContext.Current.Logger.LogInformation("[ShoppingCartExample] Cleared Cart Successfully.");
 
         return Result<string>.Success("Cleared Cart Successfully.");

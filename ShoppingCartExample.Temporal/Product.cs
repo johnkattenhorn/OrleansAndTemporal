@@ -1,4 +1,4 @@
-namespace ShoppingCartExample;
+namespace ShoppingCartExample.Temporal;
 
 [GenerateSerializer]
 public record Product

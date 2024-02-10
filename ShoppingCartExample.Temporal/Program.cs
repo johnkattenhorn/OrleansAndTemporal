@@ -1,7 +1,7 @@
 using System.Net;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using ShoppingCartExample;
+using ShoppingCartExample.Temporal;
 using Temporalio.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);

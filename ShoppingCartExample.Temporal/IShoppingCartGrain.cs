@@ -1,4 +1,4 @@
-namespace ShoppingCartExample;
+namespace ShoppingCartExample.Temporal;
 
 public interface IShoppingCartGrain : IGrainWithIntegerKey
 {

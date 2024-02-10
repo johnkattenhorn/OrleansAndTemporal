@@ -2,7 +2,7 @@ using Orleans.Runtime;
 using Temporalio.Client;
 using Temporalio.Workflows;
 
-namespace ShoppingCartExample;
+namespace ShoppingCartExample.Temporal;
 
 public sealed class ShoppingCartGrain : Grain, IShoppingCartGrain
 {

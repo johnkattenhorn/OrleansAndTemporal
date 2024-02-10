@@ -1,7 +1,7 @@
 using Temporalio.Client.Interceptors;
 using Temporalio.Workflows;
 
-namespace ShoppingCartExample;
+namespace ShoppingCartExample.Temporal;
 
 [Workflow]
 public class CheckoutWorkflow
@@ -37,13 +37,13 @@ public class CheckoutWorkflow
 
         // If both are successful then:
         // Update Cart (via orleans grain clear cart method)
-        
+
         var payment = await Workflow.ExecuteActivityAsync(
                 (CheckoutActivities act) => act.ProcessPayment(cartId), new ActivityOptions
                 {
                     StartToCloseTimeout = TimeSpan.FromMinutes(5)
                 });
-        
+
         var shipping = await Workflow.ExecuteActivityAsync(
                 (CheckoutActivities act) => act.ProcessShipping(cartId), new ActivityOptions
                 {
@@ -55,7 +55,7 @@ public class CheckoutWorkflow
         //    {
         //        StartToCloseTimeout = TimeSpan.FromMinutes(5)
         //    });
-        
+
         return Result<string>.Success("Checkout was successful.");
     }
 }

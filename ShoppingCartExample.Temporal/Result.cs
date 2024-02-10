@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace ShoppingCartExample;
+namespace ShoppingCartExample.Temporal;
 
 [GenerateSerializer]
 public class Result<T>
